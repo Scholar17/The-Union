@@ -20,9 +20,9 @@ interface PatientReferralHistoryDao {
     suspend fun deleteItemHistoryFromReferral(id: Long)
 
     @Query("SELECT * FROM ${Constants.REFERRAL_TABLE_NAME} ORDER BY saveDateMilli DESC")
-    fun getAllHistoryFromReferral() : Flow<List<PatientReferral>>
+    fun getAllHistoryFromReferral(): Flow<List<PatientReferral>>
 
     @Query("SELECT * FROM ${Constants.REFERRAL_TABLE_NAME} WHERE saveDateMilli BETWEEN :startDate AND :endDate")
-    fun getReferralHistoryWithDate(startDate: Long, endDate: Long) : Flow<List<PatientReferral>>
+    fun getReferralHistoryWithDate(startDate: Long, endDate: Long): Flow<List<PatientReferral>>
 
 }

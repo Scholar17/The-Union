@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">The Union</string>
+    <string name="app_title">International Union Against Tuberculosis and Lung Disease</string>
+    <string name="user_name">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="name_empty">User Name is Empty</string>
+    <string name="name_error">User Name Wrong</string>
+    <string name="password_error">Password Wrong</string>
+    <string name="password_length_error">Password length is more than 8 characters</string>
+    <string name="patient_referral">Patient Referral</string>
 </resources>

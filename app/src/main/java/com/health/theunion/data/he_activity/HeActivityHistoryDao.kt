@@ -21,9 +21,9 @@ interface HeActivityHistoryDao {
     suspend fun deleteItemHistoryFromHeActivity(id: Long)
 
     @Query("SELECT * FROM ${Constants.HE_TABLE_NAME} ORDER BY saveDateMilli DESC")
-    fun getAllHistoryFromHeActivity() : Flow<List<PatientReferral>>
+    fun getAllHistoryFromHeActivity() : Flow<List<HeActivity>>
 
     @Query("SELECT * FROM ${Constants.HE_TABLE_NAME} WHERE saveDateMilli BETWEEN :startDate AND :endDate")
-    fun getHeActivityHistoryWithDate(startDate: Long, endDate: Long) : Flow<List<PatientReferral>>
+    fun getHeActivityHistoryWithDate(startDate: Long, endDate: Long) : Flow<List<HeActivity>>
 
 }

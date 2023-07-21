@@ -5,7 +5,8 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [PatientReferral::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 abstract class PatientReferralHistoryDatabase : RoomDatabase() {
     abstract fun dao() : PatientReferralHistoryDao
