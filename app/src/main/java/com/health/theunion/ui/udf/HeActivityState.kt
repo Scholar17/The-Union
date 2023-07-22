@@ -1,6 +1,6 @@
 package com.health.theunion.ui.udf
 
-data class PatientReferralState(
+data class HeActivityState(
     val shouldShowErrorDialog: Boolean = false,
     val shouldShowStartDateErrorDialog: Boolean = false,
 )

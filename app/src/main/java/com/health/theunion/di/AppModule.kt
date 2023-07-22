@@ -12,7 +12,6 @@ import com.health.theunion.repository.patient_referral.PatientReferralHistoryRep
 import com.health.theunion.repository.patient_referral.PatientReferralHistoryRepositoryImpl
 import com.health.theunion.repository.user.AppUserRepository
 import com.health.theunion.repository.user.AppUserRepositoryImpl
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

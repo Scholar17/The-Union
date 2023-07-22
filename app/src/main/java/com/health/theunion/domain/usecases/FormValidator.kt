@@ -12,6 +12,13 @@ object FormValidator {
         return !result
     }
 
+    fun isVerifiedCount(count: Int): Boolean {
+        if (count < 0) {
+            return false
+        }
+        return true
+    }
+
     fun isVerifiedSex(sex: Int): Boolean {
         if (sex == -1) {
             return false

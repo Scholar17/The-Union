@@ -19,7 +19,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,12 +30,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.health.theunion.R
 import com.health.theunion.domain.events.LoginEvent
-import com.health.theunion.domain.usecases.LoginUseCase
 import com.health.theunion.navigation.Destinations
 import com.health.theunion.presentation.LoginAction
 import com.health.theunion.ui.components.CommonPasswordTextField
@@ -71,8 +67,8 @@ fun LoginView(
                 }
 
                 else -> {
-                    navController.navigate(Destinations.Home.route){
-                        popUpTo(Destinations.Login.route){
+                    navController.navigate(Destinations.Home.route) {
+                        popUpTo(Destinations.Login.route) {
                             inclusive = true
                             saveState = true
                         }
@@ -82,7 +78,7 @@ fun LoginView(
         }
     }
 
-    if(loginLoading.value){
+    if (loginLoading.value) {
         LoadingDialog(
             dismissOnOutside = true,
             dismissOnBackPress = true,
@@ -98,13 +94,14 @@ fun LoginView(
             bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
         ),
         topBar = {
-            TopAppBar(title = {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleSmall
-                )
-            },
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                },
             )
         },
         snackbarHost = {
@@ -124,7 +121,7 @@ fun LoginView(
                     VerticalSpacer(size = MaterialTheme.dimen.base_8x)
                     Text(
                         text = stringResource(id = R.string.app_title),
-                        style = MaterialTheme.typography.headlineLarge,
+                        style = MaterialTheme.typography.headlineMedium,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     VerticalSpacer(size = MaterialTheme.dimen.base_4x)

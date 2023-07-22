@@ -13,7 +13,8 @@ sealed class Destinations(val route: String) {
     object Home : Destinations(route = "home")
     object PatientReferralList : Destinations(route = "patient_referral_list")
     object PatientReferralForm : Destinations(route = "patient_referral_form")
-    object PatientReferralDetail : Destinations(route = "patient_referral_detail/{${ArgConstants.ID}}") {
+    object PatientReferralDetail :
+        Destinations(route = "patient_referral_detail/{${ArgConstants.ID}}") {
         fun passId(dataId: Long): String {
             return this.route.replace(
                 oldValue = "{${ArgConstants.ID}}",
@@ -21,6 +22,7 @@ sealed class Destinations(val route: String) {
             )
         }
     }
+
     object HeActivityList : Destinations(route = "he_activity_list")
     object HeActivityForm : Destinations(route = "he_activity_form")
     object HeActivityDetail : Destinations(route = "he_activity_detail/{${ArgConstants.ID}}") {

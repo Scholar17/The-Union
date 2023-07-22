@@ -34,7 +34,11 @@ import com.health.theunion.ui.theme.dimen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PatientReferralDetail(navController: NavController, vm: PatientReferralDetailViewModel, id: Long) {
+fun PatientReferralDetail(
+    navController: NavController,
+    vm: PatientReferralDetailViewModel,
+    id: Long
+) {
 
     Scaffold(modifier = Modifier, topBar = {
         TopAppBar(
@@ -87,11 +91,11 @@ fun PatientReferralDetail(navController: NavController, vm: PatientReferralDetai
                                     .background(MaterialTheme.colorScheme.primaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
-                                    Text(
-                                        text = result.age.toString(),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
+                                Text(
+                                    text = result.age.toString(),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             }
                             Text(
                                 modifier = Modifier
@@ -110,7 +114,7 @@ fun PatientReferralDetail(navController: NavController, vm: PatientReferralDetai
                         )
                         RowComponent(
                             label = "Sex",
-                            data = if(result.sex == 0) "Female" else "Male",
+                            data = if (result.sex == 0) "Female" else "Male",
                         )
                         RowComponent(
                             label = "Refer Date",

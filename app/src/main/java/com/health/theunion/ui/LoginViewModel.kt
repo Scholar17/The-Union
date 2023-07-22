@@ -1,7 +1,5 @@
 package com.health.theunion.ui
 
-import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.health.theunion.data.user.AppUser
@@ -11,12 +9,10 @@ import com.health.theunion.domain.usecases.LoginUseCase
 import com.health.theunion.presentation.LoginAction
 import com.health.theunion.repository.user.AppUserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -27,7 +23,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val useCase: LoginUseCase,
     private val userRepo: AppUserRepository,
-    ) : ViewModel() {
+) : ViewModel() {
     private val vmState = MutableStateFlow(LoginViewModelState())
     private val _loginEvent = MutableSharedFlow<LoginEvent>()
     val loginEvent: SharedFlow<LoginEvent> get() = _loginEvent

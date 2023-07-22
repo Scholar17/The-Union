@@ -7,14 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.health.theunion.data.he_activity.HeActivity
-import com.health.theunion.data.patient_referral.PatientReferral
 import com.health.theunion.domain.events.HeActivityListEvent
-import com.health.theunion.domain.events.PatientReferralListEvent
 import com.health.theunion.presentation.HeActivityListAction
-import com.health.theunion.presentation.PatientReferralListAction
 import com.health.theunion.repository.he_activity.HeActivityHistoryRepository
 import com.health.theunion.ui.udf.HeActivityListState
-import com.health.theunion.ui.udf.PatientReferralListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -45,7 +41,6 @@ class HeActivityListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repo.deleteAllItem()
             getHistory()
         }
     }
@@ -54,7 +49,7 @@ class HeActivityListViewModel @Inject constructor(
         return GregorianCalendar.getInstance().timeInMillis
     }
 
-    fun getHistory(){
+    fun getHistory() {
         viewModelScope.launch {
             repo.getItems().collectLatest {
                 _result.clear()

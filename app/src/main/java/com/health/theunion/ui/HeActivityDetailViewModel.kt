@@ -4,8 +4,8 @@ import android.text.format.DateFormat
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.health.theunion.data.patient_referral.PatientReferral
-import com.health.theunion.repository.patient_referral.PatientReferralHistoryRepository
+import com.health.theunion.data.he_activity.HeActivity
+import com.health.theunion.repository.he_activity.HeActivityHistoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -16,12 +16,12 @@ import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
-class PatientReferralDetailViewModel @Inject constructor(
-    private val repo: PatientReferralHistoryRepository,
+class HeActivityDetailViewModel @Inject constructor(
+    private val repo: HeActivityHistoryRepository,
 ) : ViewModel() {
 
-    private val _result = mutableStateListOf<PatientReferral>()
-    val result: MutableList<PatientReferral> get() = _result
+    private val _result = mutableStateListOf<HeActivity>()
+    val result: MutableList<HeActivity> get() = _result
 
     init {
         viewModelScope.launch {
@@ -53,5 +53,6 @@ class PatientReferralDetailViewModel @Inject constructor(
             }
         }
     }
+
 
 }

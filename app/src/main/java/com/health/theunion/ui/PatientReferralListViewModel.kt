@@ -40,7 +40,6 @@ class PatientReferralListViewModel @Inject constructor(private val repo: Patient
 
     init {
         viewModelScope.launch {
-            repo.deleteAllItem()
             getHistory()
         }
     }

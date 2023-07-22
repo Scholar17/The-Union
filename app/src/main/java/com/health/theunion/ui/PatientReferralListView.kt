@@ -105,9 +105,11 @@ fun PatientReferralListView(
                 is PatientReferralListEvent.NavigateToHistoryDetail -> {
                     navController.navigate(Destinations.PatientReferralDetail.passId(dataId = it.id))
                 }
+
                 PatientReferralListEvent.NavigateToPatientReferralForm -> {
                     navController.navigate(Destinations.PatientReferralForm.route)
                 }
+
                 PatientReferralListEvent.ShowDateTimeDialog -> datePickerDialog.show()
             }
         }
@@ -220,7 +222,7 @@ fun PatientReferralListView(
                         )
                 ) {
                     itemsIndexed(vm.result) { index, result ->
-                        if(index == 0) {
+                        if (index == 0) {
                             VerticalSpacer(size = MaterialTheme.dimen.base)
                         }
                         Row(

@@ -20,8 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -49,19 +47,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.health.theunion.R
-import com.health.theunion.domain.events.LoginEvent
 import com.health.theunion.domain.events.PatientReferralFormEvent
 import com.health.theunion.navigation.Destinations
-import com.health.theunion.presentation.LoginAction
 import com.health.theunion.presentation.PatientReferralFormAction
 import com.health.theunion.ui.components.ButtonType
 import com.health.theunion.ui.components.CommonDialog
@@ -70,8 +64,6 @@ import com.health.theunion.ui.components.LoadingDialog
 import com.health.theunion.ui.components.VerticalSpacer
 import com.health.theunion.ui.theme.dimen
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -93,22 +85,20 @@ fun PatientReferralForm(
     val form = vm.patientReferralForm.collectAsState()
 
     val township = arrayOf("AMP", "AMT", "CAT", "CMT", "PTG", "PGT", "MHA")
-    var townshipExpended = remember { mutableStateOf(false) }
-    var townshipSelected = remember { mutableStateOf(township[0]) }
+    val townshipExpended = remember { mutableStateOf(false) }
+    val townshipSelected = remember { mutableStateOf(township[0]) }
 
     val referFrom = arrayOf("VOL1", "VOL2")
-    var referFromExpended = remember { mutableStateOf(false) }
-    var referFromSelected = remember { mutableStateOf(referFrom[0]) }
+    val referFromExpended = remember { mutableStateOf(false) }
+    val referFromSelected = remember { mutableStateOf(referFrom[0]) }
 
     val referTo = arrayOf("Union", "THD", "Other")
-    var referToExpended = remember { mutableStateOf(false) }
-    var referToSelected = remember { mutableStateOf(referTo[0]) }
+    val referToExpended = remember { mutableStateOf(false) }
+    val referToSelected = remember { mutableStateOf(referTo[0]) }
 
     val signAndSymptom = arrayOf("Fever", "Weight Loss", "Cough more than Two Weeks")
-    var signAndSymptomExpended = remember { mutableStateOf(false) }
-    var signAndSymptomSelected = remember { mutableStateOf(signAndSymptom[0]) }
-
-
+    val signAndSymptomExpended = remember { mutableStateOf(false) }
+    val signAndSymptomSelected = remember { mutableStateOf(signAndSymptom[0]) }
 
 
     val radioOptions = listOf("Male", "Female")
@@ -116,7 +106,7 @@ fun PatientReferralForm(
 
     val snackState = remember { SnackbarHostState() }
 
-    if(loading.value){
+    if (loading.value) {
         LoadingDialog(
             dismissOnOutside = true,
             dismissOnBackPress = true,
@@ -156,7 +146,7 @@ fun PatientReferralForm(
         Calendar.getInstance().get(Calendar.MONTH),
         Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
 
-    )
+        )
 
     LaunchedEffect(key1 = true) {
         vm._dateInMilli.value = vm.getCurrentDateInMilli()
@@ -165,9 +155,10 @@ fun PatientReferralForm(
                 PatientReferralFormEvent.DatePickerClick -> {
                     datePickerDialog.show()
                 }
+
                 PatientReferralFormEvent.NavigateToHistoryList -> {
-                    navController.navigate(Destinations.PatientReferralList.route){
-                        popUpTo(Destinations.PatientReferralForm.route){
+                    navController.navigate(Destinations.PatientReferralList.route) {
+                        popUpTo(Destinations.PatientReferralForm.route) {
                             inclusive = true
                             saveState = false
                         }
@@ -216,7 +207,7 @@ fun PatientReferralForm(
         snackbarHost = {
             SnackbarHost(snackState)
         },
-        content = {paddingValues ->
+        content = { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -241,7 +232,11 @@ fun PatientReferralForm(
             ) {
                 Button(
                     shape = RectangleShape,
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
+                    colors = ButtonDefaults.buttonColors(
+                        MaterialTheme.colorScheme.primary.copy(
+                            alpha = 0.14f
+                        )
+                    ),
                     onClick = {
                         vm.onActionPatientReferralForm(
                             action = PatientReferralFormAction.DatePickerClick
@@ -331,7 +326,7 @@ fun PatientReferralForm(
                         )
                     },
                     placeholder = stringResource(id = R.string.age),
-                    value = if(form.value.age == 0) "" else form.value.age.toString(),
+                    value = if (form.value.age == 0) "" else form.value.age.toString(),
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next,
                     onValueCleared = {
@@ -345,7 +340,11 @@ fun PatientReferralForm(
                     errorMessage = stringResource(id = R.string.age_over_120)
                 )
                 VerticalSpacer(size = MaterialTheme.dimen.base)
-                Text(text = "Select Township", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(
+                    text = "Select Township",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -413,7 +412,11 @@ fun PatientReferralForm(
                     errorMessage = stringResource(id = R.string.address_empty)
                 )
                 VerticalSpacer(size = MaterialTheme.dimen.base)
-                Text(text = "Select Refer From", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(
+                    text = "Select Refer From",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -455,51 +458,59 @@ fun PatientReferralForm(
                         }
                     }
                 }
-                    VerticalSpacer(size = MaterialTheme.dimen.base)
-                Text(text = "Select Refer To", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                VerticalSpacer(size = MaterialTheme.dimen.base)
+                Text(
+                    text = "Select Refer To",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
                 Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    ExposedDropdownMenuBox(
+                        expanded = referToExpended.value,
+                        onExpandedChange = {
+                            referToExpended.value = !referToExpended.value
+                        }
                     ) {
-                        ExposedDropdownMenuBox(
-                            expanded = referToExpended.value,
-                            onExpandedChange = {
-                                referToExpended.value = !referToExpended.value
-                            }
-                        ) {
-                            TextField(
-                                value = referToSelected.value,
-                                onValueChange = {},
-                                readOnly = true,
-                                trailingIcon = {},
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth()
-                            )
+                        TextField(
+                            value = referToSelected.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
+                        )
 
-                            ExposedDropdownMenu(
-                                expanded = referToExpended.value,
-                                onDismissRequest = { referToExpended.value = false }
-                            ) {
-                                referTo.forEach { item ->
-                                    DropdownMenuItem(
-                                        text = { Text(text = item) },
-                                        onClick = {
-                                            referToSelected.value = item
-                                            referToExpended.value = false
-                                            vm.onActionPatientReferralForm(
-                                                PatientReferralFormAction.ChangeReferTo(
-                                                    referTo = item
-                                                )
+                        ExposedDropdownMenu(
+                            expanded = referToExpended.value,
+                            onDismissRequest = { referToExpended.value = false }
+                        ) {
+                            referTo.forEach { item ->
+                                DropdownMenuItem(
+                                    text = { Text(text = item) },
+                                    onClick = {
+                                        referToSelected.value = item
+                                        referToExpended.value = false
+                                        vm.onActionPatientReferralForm(
+                                            PatientReferralFormAction.ChangeReferTo(
+                                                referTo = item
                                             )
-                                        }
-                                    )
-                                }
+                                        )
+                                    }
+                                )
                             }
                         }
                     }
+                }
                 VerticalSpacer(size = MaterialTheme.dimen.base)
-                Text(text = "Select Sign and Symptom", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Text(
+                    text = "Select Sign and Symptom",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

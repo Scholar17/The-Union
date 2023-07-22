@@ -7,11 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.health.theunion.data.patient_referral.PatientReferral
-import com.health.theunion.domain.LoginViewModelState
 import com.health.theunion.domain.PatientReferralFormState
-import com.health.theunion.domain.events.LoginEvent
 import com.health.theunion.domain.events.PatientReferralFormEvent
-import com.health.theunion.domain.usecases.LoginUseCase
 import com.health.theunion.domain.usecases.ReferralFormUseCase
 import com.health.theunion.presentation.PatientReferralFormAction
 import com.health.theunion.repository.patient_referral.PatientReferralHistoryRepository
@@ -159,26 +156,28 @@ class PatientReferralFormViewModel @Inject constructor(
             if (!it.errorName && !it.errorAge && !it.errorAddress && !it.errorSex) {
                 vmState.update { state ->
                     state.copy(
-                        referralLoading  = true
+                        referralLoading = true
                     )
                 }
                 viewModelScope.launch {
-                    repo.addItem(patientReferral = PatientReferral(
-                        name = vmState.value.referralForm.name,
-                        sex = vmState.value.referralForm.sex,
-                        age = vmState.value.referralForm.age,
-                        referDate = vmState.value.referralForm.referDate,
-                        township = vmState.value.referralForm.township,
-                        address = vmState.value.referralForm.address,
-                        referFrom = vmState.value.referralForm.referFrom,
-                        referTo = vmState.value.referralForm.referTo,
-                        signAndSymptom = vmState.value.referralForm.signAndSymptom,
-                        referDateMilli = vmState.value.referralForm.referDateMilli,
-                        saveDateMilli = vmState.value.referralForm.saveDateMilli
-                    ))
+                    repo.addItem(
+                        patientReferral = PatientReferral(
+                            name = vmState.value.referralForm.name,
+                            sex = vmState.value.referralForm.sex,
+                            age = vmState.value.referralForm.age,
+                            referDate = vmState.value.referralForm.referDate,
+                            township = vmState.value.referralForm.township,
+                            address = vmState.value.referralForm.address,
+                            referFrom = vmState.value.referralForm.referFrom,
+                            referTo = vmState.value.referralForm.referTo,
+                            signAndSymptom = vmState.value.referralForm.signAndSymptom,
+                            referDateMilli = vmState.value.referralForm.referDateMilli,
+                            saveDateMilli = vmState.value.referralForm.saveDateMilli
+                        )
+                    )
                     vmState.update { state ->
                         state.copy(
-                            referralLoading  = false
+                            referralLoading = false
                         )
                     }
                     viewModelScope.launch {
@@ -204,11 +203,13 @@ class PatientReferralFormViewModel @Inject constructor(
                     }
                 }
             }
+
             PatientReferralFormAction.DatePickerClick -> {
                 viewModelScope.launch {
                     _patientReferralFormEvent.emit(PatientReferralFormEvent.DatePickerClick)
                 }
             }
+
             PatientReferralFormAction.ErrorDialogOk -> {
                 viewModelScope.launch {
                     _formState.value = formState.value.copy(
@@ -216,6 +217,7 @@ class PatientReferralFormViewModel @Inject constructor(
                     )
                 }
             }
+
             PatientReferralFormAction.NavigateToHistoryList -> TODO()
             is PatientReferralFormAction.SaveDataToDb -> TODO()
             PatientReferralFormAction.ShowErrorDialog -> {
@@ -225,13 +227,14 @@ class PatientReferralFormViewModel @Inject constructor(
                     )
                 }
             }
+
             is PatientReferralFormAction.chooseRadio -> {
                 viewModelScope.launch {
                     vmState.update { state ->
                         state.copy(
-                           referralForm = state.referralForm.copy(
-                               sex = action.sex
-                           )
+                            referralForm = state.referralForm.copy(
+                                sex = action.sex
+                            )
                         )
                     }
                 }
@@ -272,6 +275,7 @@ class PatientReferralFormViewModel @Inject constructor(
                     }
                 }
             }
+
             is PatientReferralFormAction.ChangeReferFrom -> {
                 viewModelScope.launch {
                     vmState.update { state ->
@@ -283,6 +287,7 @@ class PatientReferralFormViewModel @Inject constructor(
                     }
                 }
             }
+
             is PatientReferralFormAction.ChangeReferTo -> {
                 viewModelScope.launch {
                     vmState.update { state ->
@@ -294,6 +299,7 @@ class PatientReferralFormViewModel @Inject constructor(
                     }
                 }
             }
+
             is PatientReferralFormAction.ChangeSignAndSymptom -> {
                 viewModelScope.launch {
                     vmState.update { state ->

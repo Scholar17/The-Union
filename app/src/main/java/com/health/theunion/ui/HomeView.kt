@@ -54,11 +54,13 @@ fun HomeView(
                 HomeEvent.NavigateToHeActivity -> {
                     navController.navigate(Destinations.HeActivityList.route)
                 }
+
                 is HomeEvent.ShowSnackBar -> {
                     snackState.showSnackbar(
                         message = it.message
                     )
                 }
+
                 else -> {
                     navController.navigate(Destinations.Login.route)
                 }
@@ -75,7 +77,6 @@ fun HomeView(
                     Text(
                         text = stringResource(id = R.string.app_name),
                         color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleSmall
                     )
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.primary)
@@ -88,6 +89,7 @@ fun HomeView(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(color = MaterialTheme.colorScheme.secondaryContainer)
                     .padding(paddingValues)
                     .padding(MaterialTheme.dimen.base_2x)
             ) {
@@ -151,6 +153,7 @@ fun HomeView(
                             )
                         }
                     )
+                    VerticalSpacer(size = MaterialTheme.dimen.base)
                     ListItem(
                         modifier = Modifier
                             .clickable {
@@ -158,7 +161,7 @@ fun HomeView(
                                     action = HomeAction.ClickLogout
                                 )
                             }
-                            .background(color = MaterialTheme.colorScheme.onPrimaryContainer),
+                            .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
                         leadingContent = {
                             Icon(
                                 painter = painterResource(id = R.drawable.logout),
