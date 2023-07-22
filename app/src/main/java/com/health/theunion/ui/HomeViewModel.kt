@@ -35,8 +35,11 @@ class HomeViewModel @Inject constructor(
             }
 
             HomeAction.ClickHeActivity -> {
+//                _homeEvent.emit(
+//                    value = HomeEvent.NavigateToHeActivity
+//                )
                 _homeEvent.emit(
-                    value = HomeEvent.NavigateToHeActivity
+                    value = HomeEvent.ShowSnackBar(message = "This feature isn't available now")
                 )
             }
 
