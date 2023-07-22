@@ -102,7 +102,9 @@ fun PatientReferralListView(
         vm._dateInMilli.value = vm.getCurrentDateInMilli()
         vm.historyListEvent.collectLatest {
             when (it) {
-                is PatientReferralListEvent.NavigateToHistoryDetail -> TODO()
+                is PatientReferralListEvent.NavigateToHistoryDetail -> {
+                    navController.navigate(Destinations.PatientReferralDetail.passId(dataId = it.id))
+                }
                 PatientReferralListEvent.NavigateToPatientReferralForm -> {
                     navController.navigate(Destinations.PatientReferralForm.route)
                 }
@@ -294,8 +296,8 @@ fun PatientReferralListView(
                                                     color = MaterialTheme.colorScheme.outline
                                                 )
                                                 Icon(
-                                                    painter = painterResource(id = R.drawable.ic_sun),
-                                                    contentDescription = "male",
+                                                    painter = painterResource(id = R.drawable.girl),
+                                                    contentDescription = "female",
                                                     tint = MaterialTheme.colorScheme.outline,
                                                     modifier = Modifier
                                                         .size(12.dp)
@@ -310,13 +312,13 @@ fun PatientReferralListView(
                                             ) {
                                                 Text(
                                                     modifier = Modifier.align(Alignment.CenterVertically),
-                                                    text = "Female",
+                                                    text = "Male",
                                                     style = MaterialTheme.typography.labelSmall,
                                                     color = MaterialTheme.colorScheme.outline
                                                 )
                                                 Icon(
-                                                    painter = painterResource(id = R.drawable.ic_moon),
-                                                    contentDescription = "female",
+                                                    painter = painterResource(id = R.drawable.man),
+                                                    contentDescription = "male",
                                                     tint = MaterialTheme.colorScheme.outline,
                                                     modifier = Modifier
                                                         .size(12.dp)

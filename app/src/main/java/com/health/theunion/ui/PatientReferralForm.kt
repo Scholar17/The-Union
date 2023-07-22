@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,21 +14,34 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -35,18 +49,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.health.theunion.R
+import com.health.theunion.domain.events.LoginEvent
 import com.health.theunion.domain.events.PatientReferralFormEvent
 import com.health.theunion.navigation.Destinations
+import com.health.theunion.presentation.LoginAction
 import com.health.theunion.presentation.PatientReferralFormAction
 import com.health.theunion.ui.components.ButtonType
 import com.health.theunion.ui.components.CommonDialog
+import com.health.theunion.ui.components.CommonTextField
+import com.health.theunion.ui.components.LoadingDialog
+import com.health.theunion.ui.components.VerticalSpacer
 import com.health.theunion.ui.theme.dimen
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -62,6 +87,43 @@ fun PatientReferralForm(
     val date = vm._date.value
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
+
+    val error = vm.patientReferralError.collectAsState()
+    val loading = vm.patientReferralLoading.collectAsState()
+    val form = vm.patientReferralForm.collectAsState()
+
+    val township = arrayOf("AMP", "AMT", "CAT", "CMT", "PTG", "PGT", "MHA")
+    var townshipExpended = remember { mutableStateOf(false) }
+    var townshipSelected = remember { mutableStateOf(township[0]) }
+
+    val referFrom = arrayOf("VOL1", "VOL2")
+    var referFromExpended = remember { mutableStateOf(false) }
+    var referFromSelected = remember { mutableStateOf(referFrom[0]) }
+
+    val referTo = arrayOf("Union", "THD", "Other")
+    var referToExpended = remember { mutableStateOf(false) }
+    var referToSelected = remember { mutableStateOf(referTo[0]) }
+
+    val signAndSymptom = arrayOf("Fever", "Weight Loss", "Cough more than Two Weeks")
+    var signAndSymptomExpended = remember { mutableStateOf(false) }
+    var signAndSymptomSelected = remember { mutableStateOf(signAndSymptom[0]) }
+
+
+
+
+    val radioOptions = listOf("Male", "Female")
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf("") }
+
+    val snackState = remember { SnackbarHostState() }
+
+    if(loading.value){
+        LoadingDialog(
+            dismissOnOutside = true,
+            dismissOnBackPress = true,
+            message = stringResource(id = R.string.loading_login),
+            onDismissClick = {}
+        )
+    }
 
     /** date picker */
     val datePickerDialog = DatePickerDialog(
@@ -93,6 +155,7 @@ fun PatientReferralForm(
         Calendar.getInstance().get(Calendar.YEAR),
         Calendar.getInstance().get(Calendar.MONTH),
         Calendar.getInstance().get(Calendar.DAY_OF_MONTH),
+
     )
 
     LaunchedEffect(key1 = true) {
@@ -103,7 +166,18 @@ fun PatientReferralForm(
                     datePickerDialog.show()
                 }
                 PatientReferralFormEvent.NavigateToHistoryList -> {
-                    navController.navigate(Destinations.PatientReferralList.route)
+                    navController.navigate(Destinations.PatientReferralList.route){
+                        popUpTo(Destinations.PatientReferralForm.route){
+                            inclusive = true
+                            saveState = false
+                        }
+                    }
+                }
+
+                is PatientReferralFormEvent.ShowSnackBar -> {
+                    snackState.showSnackbar(
+                        message = it.message
+                    )
                 }
             }
         }
@@ -139,6 +213,9 @@ fun PatientReferralForm(
             colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.primary),
         )
     },
+        snackbarHost = {
+            SnackbarHost(snackState)
+        },
         content = {paddingValues ->
             Column(
                 modifier = Modifier
@@ -164,13 +241,13 @@ fun PatientReferralForm(
             ) {
                 Button(
                     shape = RectangleShape,
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.surface),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
                     onClick = {
                         vm.onActionPatientReferralForm(
                             action = PatientReferralFormAction.DatePickerClick
                         )
                     },
-                    contentPadding = PaddingValues(0.dp),
+                    contentPadding = PaddingValues(MaterialTheme.dimen.small),
                 ) {
                     Row(modifier = Modifier.align(Alignment.CenterVertically)) {
                         Text(date, color = MaterialTheme.colorScheme.outline)
@@ -183,7 +260,314 @@ fun PatientReferralForm(
                         )
                     }
                 }
+                VerticalSpacer(size = MaterialTheme.dimen.base_2x)
+                CommonTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onValueChanged = {
+                        vm.onActionPatientReferralForm(
+                            PatientReferralFormAction.ChangeUserName(
+                                name = it
+                            )
+                        )
+                    },
+                    placeholder = stringResource(id = R.string.name),
+                    value = form.value.name,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next,
+                    onValueCleared = {
+                        vm.onActionPatientReferralForm(
+                            PatientReferralFormAction.ChangeUserName(
+                                name = ""
+                            )
+                        )
+                    },
+                    isError = error.value.errorName,
+                    errorMessage = stringResource(id = R.string.name_empty)
+                )
+                VerticalSpacer(size = MaterialTheme.dimen.base)
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimen.base_2x)
+                ) {
+                    radioOptions.forEach { text ->
+                        Column(modifier = Modifier) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                RadioButton(
+                                    selected = (text == selectedOption),
+                                    onClick = {
+                                        if (text != radioOptions[0]) {
+                                            vm.onActionPatientReferralForm(
+                                                action = PatientReferralFormAction.chooseRadio(
+                                                    sex = 0
+                                                )
+                                            )
+                                        } else {
+                                            vm.onActionPatientReferralForm(
+                                                action = PatientReferralFormAction.chooseRadio(
+                                                    sex = 1
+                                                )
+                                            )
+                                        }
+                                        onOptionSelected(text)
+                                    }
+                                )
+                                Text(
+                                    text = text,
+                                )
+                            }
+                        }
+                    }
+                }
+                VerticalSpacer(size = MaterialTheme.dimen.base)
+                CommonTextField(
+                    modifier = Modifier
+                        .width(MaterialTheme.dimen.extra_large),
+                    onValueChanged = {
+                        vm.onActionPatientReferralForm(
+                            PatientReferralFormAction.ChangeAge(
+                                age = it.toInt()
+                            )
+                        )
+                    },
+                    placeholder = stringResource(id = R.string.age),
+                    value = if(form.value.age == 0) "" else form.value.age.toString(),
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next,
+                    onValueCleared = {
+                        vm.onActionPatientReferralForm(
+                            PatientReferralFormAction.ChangeAge(
+                                age = 0
+                            )
+                        )
+                    },
+                    isError = error.value.errorAge,
+                    errorMessage = stringResource(id = R.string.age_over_120)
+                )
+                VerticalSpacer(size = MaterialTheme.dimen.base)
+                Text(text = "Select Township", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    ExposedDropdownMenuBox(
+                        expanded = townshipExpended.value,
+                        onExpandedChange = {
+                            townshipExpended.value = !townshipExpended.value
+                        }
+                    ) {
+                        TextField(
+                            value = townshipSelected.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = townshipExpended.value,
+                            onDismissRequest = { townshipExpended.value = false }
+                        ) {
+                            township.forEach { item ->
+                                DropdownMenuItem(
+                                    text = { Text(text = item) },
+                                    onClick = {
+                                        townshipSelected.value = item
+                                        townshipExpended.value = false
+                                        vm.onActionPatientReferralForm(
+                                            PatientReferralFormAction.ChangeTownship(
+                                                township = item
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                VerticalSpacer(size = MaterialTheme.dimen.base_2x)
+                CommonTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onValueChanged = {
+                        vm.onActionPatientReferralForm(
+                            PatientReferralFormAction.ChangeAddress(
+                                address = it
+                            )
+                        )
+                    },
+                    placeholder = stringResource(id = R.string.address),
+                    value = form.value.address,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next,
+                    onValueCleared = {
+                        vm.onActionPatientReferralForm(
+                            PatientReferralFormAction.ChangeAddress(
+                                address = ""
+                            )
+                        )
+                    },
+                    isError = error.value.errorAddress,
+                    errorMessage = stringResource(id = R.string.address_empty)
+                )
+                VerticalSpacer(size = MaterialTheme.dimen.base)
+                Text(text = "Select Refer From", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    ExposedDropdownMenuBox(
+                        expanded = referFromExpended.value,
+                        onExpandedChange = {
+                            referFromExpended.value = !referFromExpended.value
+                        }
+                    ) {
+                        TextField(
+                            value = referFromSelected.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = referFromExpended.value,
+                            onDismissRequest = { referFromExpended.value = false }
+                        ) {
+                            referFrom.forEach { item ->
+                                DropdownMenuItem(
+                                    text = { Text(text = item) },
+                                    onClick = {
+                                        referFromSelected.value = item
+                                        referFromExpended.value = false
+                                        vm.onActionPatientReferralForm(
+                                            PatientReferralFormAction.ChangeReferFrom(
+                                                referFrom = item
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                    VerticalSpacer(size = MaterialTheme.dimen.base)
+                Text(text = "Select Refer To", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        ExposedDropdownMenuBox(
+                            expanded = referToExpended.value,
+                            onExpandedChange = {
+                                referToExpended.value = !referToExpended.value
+                            }
+                        ) {
+                            TextField(
+                                value = referToSelected.value,
+                                onValueChange = {},
+                                readOnly = true,
+                                trailingIcon = {},
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth()
+                            )
+
+                            ExposedDropdownMenu(
+                                expanded = referToExpended.value,
+                                onDismissRequest = { referToExpended.value = false }
+                            ) {
+                                referTo.forEach { item ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = item) },
+                                        onClick = {
+                                            referToSelected.value = item
+                                            referToExpended.value = false
+                                            vm.onActionPatientReferralForm(
+                                                PatientReferralFormAction.ChangeReferTo(
+                                                    referTo = item
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                VerticalSpacer(size = MaterialTheme.dimen.base)
+                Text(text = "Select Sign and Symptom", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    ExposedDropdownMenuBox(
+                        expanded = signAndSymptomExpended.value,
+                        onExpandedChange = {
+                            signAndSymptomExpended.value = !signAndSymptomExpended.value
+                        }
+                    ) {
+                        TextField(
+                            value = signAndSymptomSelected.value,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = {},
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = signAndSymptomExpended.value,
+                            onDismissRequest = { signAndSymptomExpended.value = false }
+                        ) {
+                            signAndSymptom.forEach { item ->
+                                DropdownMenuItem(
+                                    text = { Text(text = item) },
+                                    onClick = {
+                                        signAndSymptomSelected.value = item
+                                        signAndSymptomExpended.value = false
+                                        vm.onActionPatientReferralForm(
+                                            PatientReferralFormAction.ChangeSignAndSymptom(
+                                                signAndSymptom = item
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                VerticalSpacer(size = MaterialTheme.dimen.base_2x)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Button(
+                        modifier = Modifier.width(MaterialTheme.dimen.base_12x),
+                        onClick = {
+                            vm.onActionPatientReferralForm(
+                                PatientReferralFormAction.SubmitClick
+                            )
+                            keyboardController!!.hide()
+                        },
+                        shape = CircleShape,
+                    ) {
+                        Text(text = stringResource(id = R.string.submit))
+                    }
+                }
+                VerticalSpacer(size = MaterialTheme.dimen.base_2x)
             }
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ExpandIcon(expanded: Boolean) {
+    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
 }

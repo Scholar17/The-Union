@@ -40,7 +40,7 @@ fun CommonTextField(
     textFieldLabel: String = "",
     placeholder: String,
     value: String = "",
-    countLimit: Int = 30,
+    countLimit: Int = 40,
     onValueChanged: (String) -> Unit = {},
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Go,

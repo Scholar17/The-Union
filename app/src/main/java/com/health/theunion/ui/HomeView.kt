@@ -100,7 +100,7 @@ fun HomeView(
                                     action = HomeAction.ClickPatientReferral
                                 )
                             }
-                            .background(color = MaterialTheme.colorScheme.onBackground),
+                            .background(color = MaterialTheme.colorScheme.onPrimaryContainer),
                         leadingContent = {
                             Icon(painter = painterResource(id = R.drawable.patient_referral), contentDescription = "Patient Referral" )
                         },
@@ -118,17 +118,38 @@ fun HomeView(
                     ListItem(
                         modifier = Modifier
                             .clickable {
-                                vm.onActionHome(
+                                /*vm.onActionHome(
                                     action = HomeAction.ClickHeActivity
-                                )
+                                )*/
                             }
-                            .background(color = MaterialTheme.colorScheme.onBackground),
+                            .background(color = MaterialTheme.colorScheme.onPrimaryContainer),
                         leadingContent = {
                             Icon(painter = painterResource(id = R.drawable.he_activity), contentDescription = "He Activity")
                         },
                         headlineText = {
                             Text(
                                 text = stringResource(id = R.string.he_activity),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        trailingContent = {
+                            Icon(painter = painterResource(id = R.drawable.ic_small_chevron_right), contentDescription = "Next Arrow")
+                        }
+                    )
+                    ListItem(
+                        modifier = Modifier
+                            .clickable {
+                               vm.onActionHome(
+                                    action = HomeAction.ClickLogout
+                                )
+                            }
+                            .background(color = MaterialTheme.colorScheme.onPrimaryContainer),
+                        leadingContent = {
+                            Icon(painter = painterResource(id = R.drawable.logout), contentDescription = "Logout", tint = MaterialTheme.colorScheme.error)
+                        },
+                        headlineText = {
+                            Text(
+                                text = stringResource(id = R.string.logout),
                                 color = MaterialTheme.colorScheme.error
                             )
                         },

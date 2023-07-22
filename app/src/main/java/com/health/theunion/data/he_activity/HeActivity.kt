@@ -11,7 +11,8 @@ data class HeActivity(
     val address : String = "",
     val volunteer: String = "",
     val heAttendeesList: String = "",
-    val sex: Int = -1,
+    val male: Int = -1,
+    val female: Int = -1,
     val saveDateMilli: Long = 0L
 ){
     @PrimaryKey(autoGenerate = true)

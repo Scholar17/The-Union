@@ -102,11 +102,6 @@ class LoginViewModel @Inject constructor(
                                 _loginEvent.emit(
                                     value = LoginEvent.NavigateToHomeScreen
                                 )
-//                                appNavigator.to(
-//                                    route = Routes.HOME_ROUTE,
-//                                    popupToRoute = Routes.AUTH_ROUTE,
-//                                    inclusive = true
-//                                )
                             }
                         }
                     }

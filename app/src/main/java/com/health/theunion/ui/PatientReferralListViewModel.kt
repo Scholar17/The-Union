@@ -40,8 +40,6 @@ class PatientReferralListViewModel @Inject constructor(private val repo: Patient
     init {
         viewModelScope.launch {
             repo.deleteAllItem()
-            repo.addItem(patientReferral = PatientReferral(name = "tzo", sex = 0, age = 25, referDate = "24.1.2023", referDateMilli = 8999L, township = "Mandalay", address = "Mandalay", referFrom = "MOH", referTo = "Union", signAndSymptom = "Coach", saveDateMilli = 8908L))
-            repo.addItem(patientReferral = PatientReferral(name = "ktp", sex = 0, age = 25, referDate = "24.1.2023", referDateMilli = 8999L, township = "Mandalay", address = "Mandalay", referFrom = "MOH", referTo = "Union", signAndSymptom = "Coach", saveDateMilli = 8908L))
             getHistory()
         }
     }
@@ -96,6 +94,9 @@ class PatientReferralListViewModel @Inject constructor(private val repo: Patient
                 deleteItemFromDb(action.id)
             }
             is PatientReferralListAction.ShowHistoryDetail -> {
+                viewModelScope.launch {
+                    _historyListEvent.emit(PatientReferralListEvent.NavigateToHistoryDetail(id = action.id))
+                }
             }
             is PatientReferralListAction.ShowDeleteConfirmDialog -> {
                 viewModelScope.launch {

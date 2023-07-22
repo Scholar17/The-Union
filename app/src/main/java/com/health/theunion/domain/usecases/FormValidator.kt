@@ -12,9 +12,23 @@ object FormValidator {
         return !result
     }
 
+    fun isVerifiedSex(sex: Int): Boolean {
+        if (sex == -1) {
+            return false
+        }
+        return true
+    }
+
 
     fun isVerifiedPassword(password: String): Boolean {
         if (password.length > PWD_LENGTH) {
+            return false
+        }
+        return true
+    }
+
+    fun isVerifiedAge(age: Int): Boolean {
+        if (age > 120) {
             return false
         }
         return true

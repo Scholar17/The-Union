@@ -5,12 +5,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.health.theunion.ui.HomeView
 import com.health.theunion.ui.HomeViewModel
 import com.health.theunion.ui.LoginView
 import com.health.theunion.ui.LoginViewModel
+import com.health.theunion.ui.PatientReferralDetail
+import com.health.theunion.ui.PatientReferralDetailViewModel
 import com.health.theunion.ui.PatientReferralForm
 import com.health.theunion.ui.PatientReferralFormViewModel
 import com.health.theunion.ui.PatientReferralListView
@@ -54,7 +58,7 @@ fun RootNavGraph(
             val appViewModel = hiltViewModel<PatientReferralFormViewModel>(parentEntry)
             PatientReferralForm(navController = navController, vm = appViewModel)
         }
-/*        composable(route = Destinations.HistoryDetail.route,
+        composable(route = Destinations.PatientReferralDetail.route,
             arguments = listOf(
                 navArgument(name = ArgConstants.ID) {
                     type = NavType.LongType
@@ -63,9 +67,9 @@ fun RootNavGraph(
             val parentEntry = remember {
                 navController.getBackStackEntry(Routes.APP_ROUTE)
             }
-            val appViewModel = hiltViewModel<MyViewModel>(parentEntry)
-            HistoryDetailScreen(navController = navController, vm = appViewModel, id = it.arguments?.getLong(ArgConstants.ID)?:0L)
-        }*/
+            val appViewModel = hiltViewModel<PatientReferralDetailViewModel>(parentEntry)
+            PatientReferralDetail(navController = navController, vm = appViewModel, id = it.arguments?.getLong(ArgConstants.ID)?:0L)
+        }
 
 
     }
