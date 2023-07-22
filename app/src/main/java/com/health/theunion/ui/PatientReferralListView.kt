@@ -198,17 +198,6 @@ fun PatientReferralListView(
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
-                /*            IconButton(onClick = {
-                                vm.onActionPatientReferral(
-                                    action = PatientReferralListAction.DateFilterDialog
-                                )
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Filled.DateRange,
-                                    contentDescription = "Date Filter",
-                                    tint = MaterialTheme.colorScheme.onPrimary
-                                )
-                            }*/
             },
             colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.primary)
         )

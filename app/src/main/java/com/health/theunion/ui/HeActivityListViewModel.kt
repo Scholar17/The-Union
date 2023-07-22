@@ -6,11 +6,14 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.health.theunion.data.he_activity.HeActivity
 import com.health.theunion.data.patient_referral.PatientReferral
+import com.health.theunion.domain.events.HeActivityListEvent
 import com.health.theunion.domain.events.PatientReferralListEvent
 import com.health.theunion.presentation.HeActivityListAction
 import com.health.theunion.presentation.PatientReferralListAction
-import com.health.theunion.repository.patient_referral.PatientReferralHistoryRepository
+import com.health.theunion.repository.he_activity.HeActivityHistoryRepository
+import com.health.theunion.ui.udf.HeActivityListState
 import com.health.theunion.ui.udf.PatientReferralListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,13 +24,15 @@ import java.util.GregorianCalendar
 import javax.inject.Inject
 
 @HiltViewModel
-class PatientReferralListViewModel @Inject constructor(private val repo: PatientReferralHistoryRepository) : ViewModel() {
+class HeActivityListViewModel @Inject constructor(
+    private val repo: HeActivityHistoryRepository
+) : ViewModel() {
 
-    private val _result = mutableStateListOf<PatientReferral>()
-    val result: MutableList<PatientReferral> get() = _result
+    private val _result = mutableStateListOf<HeActivity>()
+    val result: MutableList<HeActivity> get() = _result
 
-    private val _historyListEvent = MutableSharedFlow<PatientReferralListEvent>()
-    val historyListEvent: SharedFlow<PatientReferralListEvent> get() = _historyListEvent
+    private val _historyListEvent = MutableSharedFlow<HeActivityListEvent>()
+    val historyListEvent: SharedFlow<HeActivityListEvent> get() = _historyListEvent
 
     val _dateInMilli = mutableStateOf(getCurrentDateInMilli())
     private val dateInMilli: MutableState<Long> get() = _dateInMilli
@@ -35,8 +40,8 @@ class PatientReferralListViewModel @Inject constructor(private val repo: Patient
     val _titleName = mutableStateOf("All Time Result")
     private val titleName: MutableState<String> get() = _titleName
 
-    private val _historyListState = mutableStateOf(PatientReferralListState())
-    val historyListState: State<PatientReferralListState> get() = _historyListState
+    private val _historyListState = mutableStateOf(HeActivityListState())
+    val historyListState: State<HeActivityListState> get() = _historyListState
 
     init {
         viewModelScope.launch {
@@ -71,14 +76,13 @@ class PatientReferralListViewModel @Inject constructor(private val repo: Patient
         }
     }
 
-    fun onActionPatientReferralList(action: PatientReferralListAction) {
+    fun onActionHeActivityList(action: HeActivityListAction) {
         when (action) {
-            PatientReferralListAction.NavigateToPatientReferralForm -> {
-                viewModelScope.launch {
-                    _historyListEvent.emit(PatientReferralListEvent.NavigateToPatientReferralForm)
-                }
+            is HeActivityListAction.ChangeDate -> {
+
             }
-            PatientReferralListAction.DeleteAllHistoryItem -> {
+
+            HeActivityListAction.DeleteAllHistoryItem -> {
                 viewModelScope.launch {
                     _historyListState.value = historyListState.value.copy(
                         shouldShowDeleteAllDialog = false
@@ -86,7 +90,8 @@ class PatientReferralListViewModel @Inject constructor(private val repo: Patient
                 }
                 deleteAllItemFromDb()
             }
-            is PatientReferralListAction.DeleteHistoryItem -> {
+
+            is HeActivityListAction.DeleteHistoryItem -> {
                 viewModelScope.launch {
                     _historyListState.value = historyListState.value.copy(
                         shouldShowDialog = false
@@ -94,12 +99,38 @@ class PatientReferralListViewModel @Inject constructor(private val repo: Patient
                 }
                 deleteItemFromDb(action.id)
             }
-            is PatientReferralListAction.ShowHistoryDetail -> {
+
+            HeActivityListAction.DismissDeleteAllConfirmDialog -> {
                 viewModelScope.launch {
-                    _historyListEvent.emit(PatientReferralListEvent.NavigateToHistoryDetail(id = action.id))
+                    _historyListState.value = historyListState.value.copy(
+                        shouldShowDeleteAllDialog = false
+                    )
                 }
             }
-            is PatientReferralListAction.ShowDeleteConfirmDialog -> {
+
+            HeActivityListAction.DismissDeleteConfirmDialog -> {
+                viewModelScope.launch {
+                    _historyListState.value = historyListState.value.copy(
+                        shouldShowDialog = false
+                    )
+                }
+            }
+
+            HeActivityListAction.NavigateToHeActivityForm -> {
+                viewModelScope.launch {
+                    _historyListEvent.emit(HeActivityListEvent.NavigateToHeActivityForm)
+                }
+            }
+
+            HeActivityListAction.ShowDeleteAllConfirmDialog -> {
+                viewModelScope.launch {
+                    _historyListState.value = historyListState.value.copy(
+                        shouldShowDeleteAllDialog = true
+                    )
+                }
+            }
+
+            is HeActivityListAction.ShowDeleteConfirmDialog -> {
                 viewModelScope.launch {
                     _historyListState.value = historyListState.value.copy(
                         shouldShowDialog = true,
@@ -108,29 +139,13 @@ class PatientReferralListViewModel @Inject constructor(private val repo: Patient
                 }
             }
 
-            is PatientReferralListAction.ChangeDate -> TODO()
-            PatientReferralListAction.ShowErrorDialog -> TODO()
-            PatientReferralListAction.DismissDeleteAllConfirmDialog -> {
-                viewModelScope.launch {
-                    _historyListState.value = historyListState.value.copy(
-                        shouldShowDeleteAllDialog = false
-                    )
-                }
+            HeActivityListAction.ShowErrorDialog -> {
+
             }
 
-            PatientReferralListAction.ShowDeleteAllConfirmDialog -> {
+            is HeActivityListAction.ShowHistoryDetail -> {
                 viewModelScope.launch {
-                    _historyListState.value = historyListState.value.copy(
-                        shouldShowDeleteAllDialog = true
-                    )
-                }
-            }
-
-            PatientReferralListAction.DismissDeleteConfirmDialog -> {
-                viewModelScope.launch {
-                    _historyListState.value = historyListState.value.copy(
-                        shouldShowDialog = false
-                    )
+                    _historyListEvent.emit(HeActivityListEvent.NavigateToHistoryDetail(id = action.id))
                 }
             }
         }

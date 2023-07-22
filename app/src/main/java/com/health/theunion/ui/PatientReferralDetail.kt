@@ -76,7 +76,8 @@ fun PatientReferralDetail(navController: NavController, vm: PatientReferralDetai
                                 modifier = Modifier.padding(end = MaterialTheme.dimen.base_2x),
                                 text = stringResource(id = R.string.age),
                                 textAlign = TextAlign.End,
-                                style = MaterialTheme.typography.labelLarge
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.outline
                             )
                             Box(
                                 modifier = Modifier
