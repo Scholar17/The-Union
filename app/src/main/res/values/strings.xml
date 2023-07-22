@@ -9,4 +9,16 @@
     <string name="password_error">Password Wrong</string>
     <string name="password_length_error">Password length is more than 8 characters</string>
     <string name="patient_referral">Patient Referral</string>
+    <string name="he_activity">He Activity</string>
+    <string name="loading_login">Loading ...</string>
+
+    <string name="delete_confirm_title">Delete</string>
+    <string name="delete_confirm">Are you sure to delete?</string>
+    <string name="delete_all_confirm">Are you sure to delete all history?</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="confirm_button">Confirm</string>
+
+    <string name="ok">OK</string>
+    <string name="date_error_title">Date Error</string>
+    <string name="date_error">Your date is greater than current Date.</string>
 </resources>

@@ -19,6 +19,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,11 +33,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.health.theunion.R
 import com.health.theunion.domain.events.LoginEvent
+import com.health.theunion.domain.usecases.LoginUseCase
+import com.health.theunion.navigation.Destinations
 import com.health.theunion.presentation.LoginAction
 import com.health.theunion.ui.components.CommonPasswordTextField
 import com.health.theunion.ui.components.CommonTextField
+import com.health.theunion.ui.components.LoadingDialog
 import com.health.theunion.ui.components.VerticalSpacer
 import com.health.theunion.ui.theme.dimen
 import kotlinx.coroutines.flow.collectLatest
@@ -45,8 +50,10 @@ import kotlinx.coroutines.flow.collectLatest
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun LoginView(
+    vm: LoginViewModel,
+    navController: NavController
 ) {
-    val vm: LoginViewModel = hiltViewModel()
+    val vm = vm
     val loginError = vm.loginError.collectAsState()
     val loginLoading = vm.loginLoading.collectAsState()
     val loginForm = vm.loginForm.collectAsState()
@@ -62,9 +69,28 @@ fun LoginView(
                         message = it.message
                     )
                 }
+
+                else -> {
+                    navController.navigate(Destinations.Home.route){
+                        popUpTo(Destinations.Login.route){
+                            inclusive = true
+                            saveState = true
+                        }
+                    }
+                }
             }
         }
     }
+
+    if(loginLoading.value){
+        LoadingDialog(
+            dismissOnOutside = true,
+            dismissOnBackPress = true,
+            message = stringResource(id = R.string.loading_login),
+            onDismissClick = {}
+        )
+    }
+
 
 
     Scaffold(
@@ -78,7 +104,7 @@ fun LoginView(
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleSmall
                 )
-            }
+            },
             )
         },
         snackbarHost = {
@@ -168,11 +194,4 @@ fun LoginView(
             }
         }
     )
-}
-
-
-@Preview
-@Composable
-fun LoginViewPreview() {
-    LoginView()
 }

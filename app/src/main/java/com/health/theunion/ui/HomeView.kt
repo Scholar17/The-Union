@@ -1,5 +1,6 @@
 package com.health.theunion.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,24 +21,51 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.health.theunion.R
+import com.health.theunion.domain.events.HomeEvent
+import com.health.theunion.domain.events.LoginEvent
+import com.health.theunion.navigation.Destinations
+import com.health.theunion.presentation.HomeAction
 import com.health.theunion.presentation.LoginAction
 import com.health.theunion.ui.components.CommonPasswordTextField
 import com.health.theunion.ui.components.CommonTextField
 import com.health.theunion.ui.components.VerticalSpacer
 import com.health.theunion.ui.theme.dimen
+import kotlinx.coroutines.flow.collectLatest
 
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Composable*/
-/*
-fun HomeView() {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+
+fun HomeView(
+    vm: HomeViewModel,
+    navController: NavController
+) {
+    LaunchedEffect(key1 = true) {
+        vm.homeEvent.collectLatest {
+            when (it) {
+                HomeEvent.NavigateToPatientReferral -> {
+                   navController.navigate(Destinations.PatientReferralList.route)
+                }
+                HomeEvent.NavigateToHeActivity-> {
+                    navController.navigate(Destinations.HeActivityList.route)
+                }
+                else -> {
+                    navController.navigate(Destinations.Login.route)
+                }
+            }
+        }
+    }
     Scaffold(
         contentWindowInsets = WindowInsets(
             bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
@@ -46,10 +74,11 @@ fun HomeView() {
             TopAppBar(title = {
                 Text(
                     text = stringResource(id = R.string.app_name),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     style = MaterialTheme.typography.titleSmall
                 )
-            }
+            },
+                colors = TopAppBarDefaults.smallTopAppBarColors(MaterialTheme.colorScheme.primary)
             )
         },
         content = { paddingValues ->
@@ -64,53 +93,52 @@ fun HomeView() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     VerticalSpacer(size = MaterialTheme.dimen.base_4x)
-                    androidx.compose.material3.ListItem(modifier = Modifier.clickable { },
-                    leadingContent = {}, headlineText = {Text(
-                            text = stringResource(id = R.string.password),
-                            color = MaterialTheme.colorScheme.error
-                        )}, ) {
-
-                    }
-                    VerticalSpacer(size = MaterialTheme.dimen.base)
-                    CommonPasswordTextField(
+                    ListItem(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        onValueChanged = {
-                            vm.onActionLogin(
-                                LoginAction.ChangePassword(
-                                    password = it
+                            .clickable {
+                                vm.onActionHome(
+                                    action = HomeAction.ClickPatientReferral
                                 )
+                            }
+                            .background(color = MaterialTheme.colorScheme.onBackground),
+                        leadingContent = {
+                            Icon(painter = painterResource(id = R.drawable.patient_referral), contentDescription = "Patient Referral" )
+                        },
+                        headlineText = {
+                            Text(
+                                text = stringResource(id = R.string.patient_referral),
+                                color = MaterialTheme.colorScheme.error
                             )
                         },
-                        placeholder = stringResource(id = R.string.password),
-                        password = loginForm.value.password,
-                        imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Password,
-                        isError = loginError.value.errorPassword,
-                        errorMessage = stringResource(id = R.string.password_length_error),
-                        keyboardAction = { keyboardController!!.hide() }
-                    )
-                    VerticalSpacer(size = MaterialTheme.dimen.base_2x)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Button(
-                            modifier = Modifier.width(MaterialTheme.dimen.base_12x),
-                            onClick = {
-                                vm.onActionLogin(
-                                    LoginAction.ClickLogin
-                                )
-                                keyboardController!!.hide()
-                            },
-                            shape = CircleShape,
-                        ) {
-                            Text(text = stringResource(id = R.string.login))
+                        trailingContent = {
+                            Icon(painter = painterResource(id = R.drawable.ic_small_chevron_right), contentDescription = "Next Arrow")
                         }
-                    }
+                    )
+                    VerticalSpacer(size = MaterialTheme.dimen.base)
+                    ListItem(
+                        modifier = Modifier
+                            .clickable {
+                                vm.onActionHome(
+                                    action = HomeAction.ClickHeActivity
+                                )
+                            }
+                            .background(color = MaterialTheme.colorScheme.onBackground),
+                        leadingContent = {
+                            Icon(painter = painterResource(id = R.drawable.he_activity), contentDescription = "He Activity")
+                        },
+                        headlineText = {
+                            Text(
+                                text = stringResource(id = R.string.he_activity),
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        trailingContent = {
+                            Icon(painter = painterResource(id = R.drawable.ic_small_chevron_right), contentDescription = "Next Arrow")
+                        }
+                    )
                 }
             }
         }
     )
-}*/
+}
+

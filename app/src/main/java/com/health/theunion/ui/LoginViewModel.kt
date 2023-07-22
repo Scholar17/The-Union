@@ -100,9 +100,7 @@ class LoginViewModel @Inject constructor(
 
                             true -> {
                                 _loginEvent.emit(
-                                    value = LoginEvent.ShowSnackBar(
-                                        message = "Success"
-                                    )
+                                    value = LoginEvent.NavigateToHomeScreen
                                 )
 //                                appNavigator.to(
 //                                    route = Routes.HOME_ROUTE,

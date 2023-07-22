@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.health.theunion.navigation.RootNavGraph
 import com.health.theunion.ui.LoginView
 import com.health.theunion.ui.LoginViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,8 +21,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 // A surface container using the 'background' color from the theme
-                LoginView(
-                )
+                val navController = rememberNavController()
+                RootNavGraph(navController = navController)
             }
         }
     }
